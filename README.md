@@ -7,11 +7,24 @@ opening a pull request. The GitHub token is read by the activity worker from
 ## Requirements
 
 - Python 3.11+
-- A running Temporal server (for local development, `temporal server start-dev`)
+- Docker Compose
 - A GitHub personal access token with `Contents: Read and write` and
 	`Pull requests: Read and write` access to the target repository
 
 ## Run
+
+Start the local Temporal development server and UI:
+
+```bash
+docker compose up -d
+```
+
+Open the Temporal UI at <http://localhost:8233>. The server listens at
+`localhost:7233`, which is the default address used by the worker and workflow
+starter. Stop the container with `docker compose down`.
+
+This uses Temporal's development server with its bundled UI and is intended for
+local development, not production use.
 
 Install the package and set the token in the worker's environment:
 
@@ -49,8 +62,7 @@ Start the workflow from another terminal:
 python -m github_pr_workflow.start_workflow request.json
 ```
 
-The command waits for completion and prints the pull request URL. Temporal's
-local development server uses `localhost:7233` and the `default` namespace by
-default. Set `TEMPORAL_ADDRESS`, `TEMPORAL_NAMESPACE`, and `TEMPORAL_TASK_QUEUE`
-to override those defaults. The input file contains the content to commit, so
-do not include secrets in it.
+The command waits for completion and prints the pull request URL. The `default`
+namespace is used unless `TEMPORAL_NAMESPACE` is set. Set `TEMPORAL_ADDRESS`
+and `TEMPORAL_TASK_QUEUE` to override the worker and starter defaults. The
+input file contains the content to commit, so do not include secrets in it.
